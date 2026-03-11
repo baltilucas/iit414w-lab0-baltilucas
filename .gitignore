@@ -1,0 +1,6 @@
+/venv
+.env
+MakeRequirements.sh
+__pycache__
+.ipynb_checkpoints
+
