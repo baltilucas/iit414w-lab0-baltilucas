@@ -67,11 +67,11 @@ print('   • Same locale → CSV parsing and sorting behave identically')
 I keep partially because data like memory aviable is useful and relevant to find some posible errors and problems to execute the notebook.
 
 
-## Entry [2] — [Looking for OS reproducibility checks] · [2026-03-10]
+## Entry [2] — [VAR driver comparsion] · [2026-03-10]
 
 **Context:**
 
-I was trying to get some example in the __setup_check.ipynb__ for reproducibility checks.
+I was trying to get some example in the __setup_check.ipynb__ for the instruction of comparsion of VAR driver with another.
 
 **Prompt(s):**
 Prompt 1: "Compare one additional driver against VER and summarize variance differences using the data structure of cell 17, then express in a table and a stylish graphic. use standard deviation of lap times in seconds."
@@ -137,3 +137,178 @@ plt.show()
 - The code given keeps since the result is the expected since the request was just compare.
 **Final Decision:**
 I keep completly because the result was correct and didin't need mayor corrections.
+
+
+## Entry [3] — [Load data from Fastf1] · [2026-03-11]
+
+**Context:**
+
+At __data_check.ipynb__ i asked by a load session example as instruction asked
+**Prompt(s):**
+Prompt 1: "Load one complete session from any 2024 race Print: session name and event name, Number of laps in the results (session.results.shape), Column names of the results DataFrame, First 5 rows of lap data (session.laps.head())"
+
+
+**Relevant Output:**
+
+The AI model give me a code section inplace and the chat give a summary of the code written, the place selected was Bahrain by the ai.
+```python
+
+import fastf1
+
+# Load a complete session from the 2024 Bahrain Grand Prix Qualifying
+session = fastf1.get_session(2024, 'Bahrain', 'Q')
+session.load()
+
+# Print session name and event name
+print(f"Session Name: {session.name}")
+print(f"Event Name: {session.event['EventName']}")
+
+# Number of laps in the results
+print(f"Number of laps in results: {session.results.shape[0]}")
+
+# Column names of the results DataFrame
+print(f"Column names: {list(session.results.columns)}")
+
+# First 5 rows of lap data
+print("First 5 rows of lap data:")
+print(session.laps.head())
+```
+**Validation:**
+- Test 1: Run the code to find syntax errors quickly
+
+**Adaptations:**
+- The code given dont use a real dataframe so i adapted to show a real table, and change Bahrain to Monzo.
+**Final Decision:**
+I keep most of code created with the changes to use pandas dataframes and Monzo instead Bahrain.
+
+## Entry [4] — [Load data from Jolpica] · [2026-03-11]
+
+**Context:**
+
+At __data_check.ipynb__ i asked by charge data from jolpica API.
+
+**Prompt(s):**
+Prompt 1: "write a request in python for Query the Jolpica API (Ergast successor) for one historical endpoint. Suggested: 2024 driver standings (https://api.jolpi.ca/ergast/f1/2024/driverstandings/). Print:  HTTP status code (must be 200), Number of records returned, First 3 driver entries (name, nationality, points)"
+
+
+**Relevant Output:**
+The AI model give me a code section inplace and the chat give a summary of the code written, use only request and dont load the json, just charge the request.
+```python
+import requests
+
+# Endpoint
+url = "https://api.jolpi.ca/ergast/f1/2024/driverstandings/"
+
+# Query API
+response = requests.get(url)
+
+# 1. HTTP status code
+print("HTTP status code:", response.status_code)
+
+data = response.json()
+
+# Extract standings list
+standings = data["MRData"]["StandingsTable"]["StandingsLists"][0]["DriverStandings"]
+
+# 2. Number of records returned
+print("Number of records returned:", len(standings))
+
+# 3. First 3 driver entries (name, nationality, points)
+print("\nFirst 3 drivers:")
+for driver in standings[:3]:
+    name = f"{driver['Driver']['givenName']} {driver['Driver']['familyName']}"
+    nationality = driver['Driver']['nationality']
+    points = driver['points']
+    
+    print({
+        "name": name,
+        "nationality": nationality,
+        "points": points
+    })
+```
+
+
+**Validation:**
+- Test 1: Run the code to find syntax errors quickly
+
+**Adaptations:**
+- The code given dont use a real dataframe so i adapted to show a real table, and use json library instead json from request, the process is similar but is better catching errors.
+**Final Decision:**
+I keep most of code created with the changes to use pandas dataframes and Monzo instrad Bahrain.
+
+
+## Entry [5] — [Finishing the Output of readme] · [2026-03-11]
+
+**Context:**
+
+At __README.MD__ the output expected was ideal for ai agent since can read the notebooks and write what will appear.
+
+**Prompt(s):**
+Prompt 1: "Add expected outputs of datacheck and setupcheck, e.g., "setup_check.ipynb prints a 6-row package table and 'All checks passed ✓'" " For context to copilot i added the __setup_check.ipynb__ and __data_check.ipynb__.
+
+
+**Relevant Output:**
+Copilot added the expected output to the README.MD, the added section is:
+
+````markdown
+### setup_check.ipynb
+
+When running all cells:
+
+1. **Reproducibility Header** — Prints Python version, NumPy version, and seed constant:
+   ```
+   Python  : 3.11.2
+   NumPy   : 2.4.3
+   Seed    : 414
+   ```
+
+2. **Dependency Guard** — Confirms all packages are installed:
+   ```
+   All required packages already installed ✓
+   fastf1  : 3.8.1
+   pandas  : 2.3.3
+   ```
+
+3. **Package Versions Table** — Displays a 6-row table with package versions (numpy, pandas, sklearn, matplotlib, seaborn, fastf1), plus working directory path and FastF1 cache location, plus git version and recent 5 commits.
+
+4. **OS & Architecture Verification** — Prints Linux OS type, kernel release, 64-bit architecture, available disk space (~91 GB), locale (es_CL), and UTF-8 encoding.
+
+5. **Abu Dhabi Analysis** — Generates:
+   - Two-panel plot showing all qualifying laps and fast-only laps for top 5 drivers
+   - Summary table with best lap times and gaps to pole position
+   - Violin plot comparing lap time distributions between two drivers
+   - Variance analysis with standard deviation metrics
+
+### data_check.ipynb
+
+When running all cells:
+
+1. **Reproducibility Header** — Prints Python version, NumPy version, and seed constant (same as above).
+
+2. **F1 Session Data** — Loads 2024 Italian Grand Prix (Monza) Qualifying session and displays a table with:
+   - Session name: `Qualifying`
+   - Event name: `Italian Grand Prix`
+   - Number of drivers in results: `20`
+   - Result columns list (DriverNumber, BroadcastName, Abbreviation, etc.)
+   - First lap data from session
+
+3. **Ergast API Driver Standings** — Fetches 2024 F1 driver standings from ergast API and prints:
+   ```
+   HTTP status code: 200
+   Number of records returned: 24
+   ```
+   Displays top 3 drivers (Max Verstappen, Lando Norris, Charles Leclerc) with points.
+
+**Note:** Python version, NumPy/package versions, OS details, and disk space will differ based on your machine. The data pulled from FastF1 and Ergast API should match regardless of machine.
+
+
+````
+
+
+**Validation:**
+- It wasn't necessary, only read to be sure that the expected output is correct
+
+**Adaptations:**
+- It wasn't neccessary because it's only text and was correct
+**Final Decision:**
+I keep the copilot modification exactly like was given.
